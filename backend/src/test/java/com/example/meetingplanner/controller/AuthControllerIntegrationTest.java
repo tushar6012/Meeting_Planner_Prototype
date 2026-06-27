@@ -52,25 +52,25 @@ public class AuthControllerIntegrationTest {
         mockMvc.perform(multipart("/api/auth/signup")
                         .file(avatarFile)
                         .param("fullName", "Tushar Patel")
-                        .param("email", "john@example.com")
-                        .param("password", "johnpass"))
+                        .param("email", "tushar@example.com")
+                        .param("password", "tusharpass"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token", notNullValue()))
                 .andExpect(jsonPath("$.fullName").value("Tushar Patel"))
-                .andExpect(jsonPath("$.email").value("john@example.com"));
+                .andExpect(jsonPath("$.email").value("tushar@example.com"));
 
         // Verify user exists in database
-        assertTrue(userRepository.findByEmail("john@example.com").isPresent());
+        assertTrue(userRepository.findByEmail("tushar@example.com").isPresent());
 
         // 2. Login
-        LoginRequest loginRequest = new LoginRequest("john@example.com", "johnpass");
+        LoginRequest loginRequest = new LoginRequest("tushar@example.com", "tusharpass");
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token", notNullValue()))
-                .andExpect(jsonPath("$.email").value("john@example.com"));
+                .andExpect(jsonPath("$.email").value("tushar@example.com"));
     }
 
     @Test

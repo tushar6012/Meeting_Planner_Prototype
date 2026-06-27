@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,6 +18,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -25,6 +27,9 @@ public class UserService {
 
     @Transactional
     public User registerUser(String fullName, String email, String password, MultipartFile avatarFile) {
+        if (email == null || !EMAIL_PATTERN.matcher(email).matches()) {
+            throw new IllegalArgumentException("Invalid email format.");
+        }
         if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email is already taken");
         }
@@ -35,6 +40,9 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(password));
 
         if (avatarFile != null && !avatarFile.isEmpty()) {
+            if (avatarFile.getSize() > 1024 * 1024) {
+                throw new IllegalArgumentException("Avatar image size must not exceed 1 MB.");
+            }
             try {
                 user.setAvatar(avatarFile.getBytes());
                 user.setAvatarContentType(avatarFile.getContentType());

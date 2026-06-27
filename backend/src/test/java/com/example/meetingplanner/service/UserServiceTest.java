@@ -84,12 +84,37 @@ public class UserServiceTest {
     }
 
     @Test
+    void registerUser_ThrowsException_WhenAvatarExceeds1MB() {
+        String fullName = "Alice Smith";
+        String email = "alice@example.com";
+        String plainPassword = "password123";
+        byte[] largeBytes = new byte[1024 * 1024 + 1];
+        MockMultipartFile avatarFile = new MockMultipartFile("avatar", "large.jpg", "image/jpeg", largeBytes);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.registerUser(fullName, email, plainPassword, avatarFile);
+        });
+
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
     void registerUser_ThrowsException_WhenEmailExists() {
         String email = "duplicate@example.com";
         when(userRepository.existsByEmail(email)).thenReturn(true);
 
         assertThrows(IllegalArgumentException.class, () -> {
             userService.registerUser("Name", email, "password", null);
+        });
+
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void registerUser_ThrowsException_WhenEmailInvalid() {
+        String invalidEmail = "invalid-email-format";
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.registerUser("Name", invalidEmail, "password", null);
         });
 
         verify(userRepository, never()).save(any(User.class));

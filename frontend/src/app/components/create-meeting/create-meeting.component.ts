@@ -17,6 +17,7 @@ export class CreateMeetingComponent implements OnInit {
   agenda = '';
   dateTime = '';
   location = '';
+  minDateTime = '';
   
   participantsList: UserResponse[] = [];
   selectedParticipantIds = new Set<number>();
@@ -32,7 +33,18 @@ export class CreateMeetingComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.minDateTime = this.getMinDateTime();
     this.loadUsers();
+  }
+
+  getMinDateTime(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
   loadUsers(): void {
@@ -68,6 +80,18 @@ export class CreateMeetingComponent implements OnInit {
   onSubmit(): void {
     if (!this.title || !this.dateTime || !this.location) {
       this.errorMessage = 'Please fill out all required fields (Title, Date & Time, Location)';
+      return;
+    }
+
+    const selectedDate = new Date(this.dateTime);
+    const now = new Date();
+    if (selectedDate <= now) {
+      this.errorMessage = 'Meeting date and time must be in the future.';
+      return;
+    }
+
+    if (this.selectedParticipantIds.size === 0) {
+      this.errorMessage = 'Please select at least one participant.';
       return;
     }
 

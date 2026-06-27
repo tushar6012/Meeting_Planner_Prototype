@@ -53,7 +53,9 @@
           class="form-input" 
           [(ngModel)]="email" 
           required 
-          placeholder="john@example.com"
+          email
+          pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+          placeholder="tushar@example.com"
           #emailInput="ngModel"
         />
       </div>

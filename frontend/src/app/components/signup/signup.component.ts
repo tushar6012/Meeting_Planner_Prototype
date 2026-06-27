@@ -33,6 +33,16 @@ export class SignupComponent {
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
+      if (file.size > 1024 * 1024) {
+        this.errorMessage = 'Avatar image size must not exceed 1 MB.';
+        this.avatarFile = null;
+        this.avatarPreview = null;
+        event.target.value = '';
+        this.cdr.markForCheck();
+        return;
+      }
+      
+      this.errorMessage = '';
       this.avatarFile = file;
       
       // Generate preview URL
@@ -48,6 +58,17 @@ export class SignupComponent {
   onSubmit(): void {
     if (!this.fullName || !this.email || !this.password) {
       this.errorMessage = 'Please fill out all required fields';
+      return;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(this.email)) {
+      this.errorMessage = 'Please enter a valid email address.';
+      return;
+    }
+
+    if (this.avatarFile && this.avatarFile.size > 1024 * 1024) {
+      this.errorMessage = 'Avatar image size must not exceed 1 MB.';
       return;
     }
 

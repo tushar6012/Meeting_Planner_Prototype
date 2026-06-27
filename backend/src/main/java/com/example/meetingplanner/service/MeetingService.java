@@ -10,6 +10,8 @@ import com.example.meetingplanner.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,13 +36,25 @@ public class MeetingService {
         Meeting meeting = new Meeting();
         meeting.setTitle(request.title());
         meeting.setAgenda(request.agenda());
+        
+        if (request.dateTime() == null) {
+            throw new IllegalArgumentException("Meeting date and time is required.");
+        }
+        if (request.dateTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Meeting date and time must be in the future.");
+        }
+        
         meeting.setDateTime(request.dateTime());
         meeting.setLocation(request.location());
         meeting.setHost(host);
 
-        Set<User> participants = new HashSet<>();
-        if (request.participantIds() != null && !request.participantIds().isEmpty()) {
-            participants.addAll(userRepository.findAllById(request.participantIds()));
+        if (request.participantIds() == null || request.participantIds().isEmpty()) {
+            throw new IllegalArgumentException("At least one participant is required.");
+        }
+
+        Set<User> participants = new HashSet<>(userRepository.findAllById(request.participantIds()));
+        if (participants.isEmpty()) {
+            throw new IllegalArgumentException("Selected participants are invalid.");
         }
         meeting.setParticipants(participants);
 

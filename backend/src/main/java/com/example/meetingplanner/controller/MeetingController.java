@@ -21,12 +21,16 @@ public class MeetingController {
     }
 
     @PostMapping
-    public ResponseEntity<MeetingResponse> createMeeting(@RequestBody MeetingRequest request, Principal principal) {
+    public ResponseEntity<?> createMeeting(@RequestBody MeetingRequest request, Principal principal) {
         if (principal == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        MeetingResponse response = meetingService.createMeeting(request, principal.getName());
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        try {
+            MeetingResponse response = meetingService.createMeeting(request, principal.getName());
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping

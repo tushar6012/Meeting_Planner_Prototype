@@ -74,6 +74,48 @@ public class MeetingServiceTest {
     }
 
     @Test
+    void createMeeting_ThrowsException_WhenDateInPast() {
+        LocalDateTime pastTime = LocalDateTime.now().minusMinutes(5);
+        MeetingRequest request = new MeetingRequest(
+                "Past Meeting",
+                "This should fail",
+                pastTime,
+                "Room 404",
+                Set.of(2L)
+        );
+
+        User host = new User(1L, "Host User", "host@example.com", "encoded");
+        when(userRepository.findByEmail("host@example.com")).thenReturn(Optional.of(host));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            meetingService.createMeeting(request, "host@example.com");
+        });
+
+        verify(meetingRepository, never()).save(any(Meeting.class));
+    }
+
+    @Test
+    void createMeeting_ThrowsException_WhenNoParticipants() {
+        LocalDateTime meetingTime = LocalDateTime.now().plusDays(1);
+        MeetingRequest request = new MeetingRequest(
+                "No Participant Meeting",
+                "This should fail",
+                meetingTime,
+                "Room 404",
+                Set.of()
+        );
+
+        User host = new User(1L, "Host User", "host@example.com", "encoded");
+        when(userRepository.findByEmail("host@example.com")).thenReturn(Optional.of(host));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            meetingService.createMeeting(request, "host@example.com");
+        });
+
+        verify(meetingRepository, never()).save(any(Meeting.class));
+    }
+
+    @Test
     void getMeetingsForUser_Success() {
         LocalDateTime meetingTime = LocalDateTime.now();
         Meeting meeting = new Meeting(10L, "Sprint Review", "Demo", meetingTime, "Teams", host);
