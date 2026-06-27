@@ -82,6 +82,7 @@ To execute all tests, navigate to the `backend` folder and run:
 - Screen design I can use any thing not existing design available
 - User session used Jwt token service and front end use loacalStorage of browser
 - File size validation less then 1 MB as I store in database
+- Application UI not consistent in every browser
 
 ---
 
@@ -97,5 +98,6 @@ To execute all tests, navigate to the `backend` folder and run:
 2. **Interactive H2 Console Control:** Implement Spring Boot profiles (e.g., `dev` and `prod`) so that H2 console is disabled in production environments.
 3. **Advanced Meeting Features:** Add features like calendar integrations (ICS file generation), email notifications when users are invited to meetings, and meeting status updates (e.g., Pending, Confirmed, Cancelled),Scheduling Assistance(Display user availibility on selection) same as outlook or other tools,Give meeting options like occurrance(daily,weekly etc..).
 4. **End-to-End Testing:** Incorporate Cypress or Playwright tests to test the Angular user interfaces and login flows end-to-end.
-5. **Validation Improvement:** Incorporate more suitable validation like meeting schedule button enable after only select participant,Max length (Character limit on free form text), etc.
-6. **Doker Kubernates:** Create docker Image and push to docker repository you can direct pull and run in docker environment
+5. **Validation Improvement:** Incorporate more suitable validation like meeting schedule button enable after only select participant,Max length (Character limit on free form text),file type validation etc.
+6. **UI Improvement:** Use component that work same in every browser(every browser support),Resposive UI to support mobile,Ipad,Tab
+7. **Doker Kubernates:** Create docker Image and push to docker repository you can direct pull and run in docker environment
