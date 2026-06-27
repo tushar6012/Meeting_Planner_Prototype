@@ -1,0 +1,109 @@
+<div class="meeting-detail-wrapper">
+  <!-- Back navigation -->
+  <div class="header-nav">
+    <a routerLink="/dashboard" class="back-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      Back to Dashboard
+    </a>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner-lg"></div>
+    <p>Loading meeting details...</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="!isLoading && errorMessage" class="error-container">
+    <div class="alert alert-error">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <span>{{ errorMessage }}</span>
+    </div>
+    <a routerLink="/dashboard" class="btn btn-secondary">Return to Dashboard</a>
+  </div>
+
+  <!-- Detail Display Card -->
+  <div *ngIf="!isLoading && meeting" class="detail-card">
+    <div class="card-main-header">
+      <div class="header-titles">
+        <div class="badge-row">
+          <span class="badge" [class.badge-primary]="currentUser && meeting.host.id === currentUser.id">
+            {{ currentUser && meeting.host.id === currentUser.id ? 'Hosting' : 'Participant' }}
+          </span>
+        </div>
+        <h2 class="title">{{ meeting.title }}</h2>
+      </div>
+    </div>
+
+    <!-- Quick Meta Information Bar -->
+    <div class="meta-info-bar">
+      <div class="meta-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="meta-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <div class="meta-text">
+          <span class="meta-label">Date</span>
+          <span class="meta-value">{{ formatDate(meeting.dateTime) }}</span>
+        </div>
+      </div>
+
+      <div class="meta-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="meta-icon"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <div class="meta-text">
+          <span class="meta-label">Time</span>
+          <span class="meta-value">{{ formatTime(meeting.dateTime) }}</span>
+        </div>
+      </div>
+
+      <div class="meta-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="meta-icon"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        <div class="meta-text">
+          <span class="meta-label">Location</span>
+          <span class="meta-value">{{ meeting.location }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agenda/Description -->
+    <div class="section agenda-section">
+      <h3 class="section-title">Agenda</h3>
+      <div class="agenda-content">
+        <p *ngIf="meeting.agenda" class="agenda-text">{{ meeting.agenda }}</p>
+        <p *ngIf="!meeting.agenda" class="agenda-text italic-text">No agenda specified for this meeting.</p>
+      </div>
+    </div>
+
+    <!-- Host and Participants details grid -->
+    <div class="people-grid">
+      <!-- Host Column -->
+      <div class="section">
+        <h3 class="section-title font-sm">Host</h3>
+        <div class="person-card host-highlight">
+          <img [src]="getAvatarUrl(meeting.host.id)" alt="Host Avatar" class="person-avatar" />
+          <div class="person-info">
+            <span class="person-name">{{ meeting.host.fullName }}</span>
+            <span class="person-email">{{ meeting.host.email }}</span>
+          </div>
+          <span class="role-badge">Host</span>
+        </div>
+      </div>
+
+      <!-- Participants Column -->
+      <div class="section">
+        <h3 class="section-title font-sm">Participants ({{ meeting.participants.length }})</h3>
+        
+        <div *ngIf="meeting.participants.length === 0" class="no-participants-note">
+          No participants have been invited to this meeting yet.
+        </div>
+
+        <div *ngIf="meeting.participants.length > 0" class="participants-list">
+          <div *ngFor="let p of meeting.participants" class="person-card">
+            <img [src]="getAvatarUrl(p.id)" alt="Participant Avatar" class="person-avatar" />
+            <div class="person-info">
+              <span class="person-name">{{ p.fullName }}</span>
+              <span class="person-email">{{ p.email }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,118 @@
+<div class="create-meeting-wrapper">
+  <!-- Header row with Back navigation -->
+  <div class="header-nav">
+    <a routerLink="/dashboard" class="back-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      Back to Dashboard
+    </a>
+    <h2>Schedule a New Meeting</h2>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-error">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <!-- Form Layout -->
+  <form (ngSubmit)="onSubmit()" #meetingForm="ngForm" class="meeting-form">
+    <div class="form-grid">
+      <!-- Left side: Basic Details -->
+      <div class="details-pane">
+        <div class="form-group">
+          <label for="title" class="form-label">Meeting Title *</label>
+          <input 
+            type="text" 
+            id="title" 
+            name="title" 
+            class="form-input" 
+            [(ngModel)]="title" 
+            required 
+            placeholder="e.g. Weekly Sync, Design Review"
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="dateTime" class="form-label">Date & Time *</label>
+            <input 
+              type="datetime-local" 
+              id="dateTime" 
+              name="dateTime" 
+              class="form-input" 
+              [(ngModel)]="dateTime" 
+              required
+            />
+          </div>
+
+          <div class="form-group flex-1">
+            <label for="location" class="form-label">Location *</label>
+            <input 
+              type="text" 
+              id="location" 
+              name="location" 
+              class="form-input" 
+              [(ngModel)]="location" 
+              required 
+              placeholder="e.g. Conference Room A, MS Teams, Zoom"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="agenda" class="form-label">Meeting Agenda</label>
+          <textarea 
+            id="agenda" 
+            name="agenda" 
+            class="form-input text-area" 
+            [(ngModel)]="agenda" 
+            placeholder="What will be discussed during the meeting? (agenda, goals, notes, links...)"
+            rows="6"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Right side: Participants Checklist -->
+      <div class="participants-pane">
+        <label class="form-label">Select Participants</label>
+        <p class="pane-subtitle">Choose team members to invite to this meeting</p>
+        
+        <!-- Empty state for other users -->
+        <div *ngIf="participantsList.length === 0" class="empty-participants">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <p>No other registered users found to invite.</p>
+        </div>
+
+        <!-- Participants scrollable checklist -->
+        <div *ngIf="participantsList.length > 0" class="checklist-container">
+          <div 
+            *ngFor="let user of participantsList" 
+            class="checklist-item"
+            [class.selected]="isParticipantSelected(user.id)"
+            (click)="toggleParticipant(user.id)"
+          >
+            <div class="item-user">
+              <img [src]="getAvatarUrl(user.id)" alt="Participant Avatar" class="item-avatar" />
+              <div class="item-info">
+                <span class="item-name">{{ user.fullName }}</span>
+                <span class="item-email">{{ user.email }}</span>
+              </div>
+            </div>
+            <div class="checkbox-indicator">
+              <svg *ngIf="isParticipantSelected(user.id)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions Footer -->
+    <div class="form-actions">
+      <a routerLink="/dashboard" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary" [disabled]="isLoading || !meetingForm.form.valid">
+        <span *ngIf="!isLoading">Schedule Meeting</span>
+        <span *ngIf="isLoading" class="spinner"></span>
+        <span *ngIf="isLoading">Scheduling...</span>
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,53 @@
+<div class="glass-container">
+  <div class="glass-card">
+    <div class="auth-header">
+      <h2>Welcome Back</h2>
+      <p>Log in to manage your meetings and participants</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <div class="form-group">
+        <label for="email" class="form-label">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          class="form-input" 
+          [(ngModel)]="email" 
+          required 
+          placeholder="name@company.com"
+          #emailInput="ngModel"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          class="form-input" 
+          [(ngModel)]="password" 
+          required 
+          placeholder="••••••••"
+          #passwordInput="ngModel"
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-full" [disabled]="isLoading || !loginForm.form.valid">
+        <span *ngIf="!isLoading">Log In</span>
+        <span *ngIf="isLoading" class="spinner"></span>
+        <span *ngIf="isLoading">Authenticating...</span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Don't have an account? <a routerLink="/signup">Sign up</a></p>
+    </div>
+  </div>
+</div>
